@@ -31,7 +31,7 @@ func NewCourierServiceClient(cc grpc.ClientConnInterface) CourierServiceClient {
 
 func (c *courierServiceClient) Hello(ctx context.Context, in *Mensaje, opts ...grpc.CallOption) (*Mensaje, error) {
 	out := new(Mensaje)
-	err := c.cc.Invoke(ctx, "/courier.CourierService/Hello", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/CourierService/Hello", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (c *courierServiceClient) Hello(ctx context.Context, in *Mensaje, opts ...g
 
 func (c *courierServiceClient) CodigoPyme(ctx context.Context, in *OrdenPyme, opts ...grpc.CallOption) (*Codigo, error) {
 	out := new(Codigo)
-	err := c.cc.Invoke(ctx, "/courier.CourierService/CodigoPyme", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/CourierService/CodigoPyme", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func _CourierService_Hello_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/courier.CourierService/Hello",
+		FullMethod: "/CourierService/Hello",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourierServiceServer).Hello(ctx, req.(*Mensaje))
@@ -107,7 +107,7 @@ func _CourierService_CodigoPyme_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/courier.CourierService/CodigoPyme",
+		FullMethod: "/CourierService/CodigoPyme",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CourierServiceServer).CodigoPyme(ctx, req.(*OrdenPyme))
@@ -116,7 +116,7 @@ func _CourierService_CodigoPyme_Handler(srv interface{}, ctx context.Context, de
 }
 
 var _CourierService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "courier.CourierService",
+	ServiceName: "CourierService",
 	HandlerType: (*CourierServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package courier;
+option go_package = "github.com/dnorambu/pruebas/courier";
 
 message Mensaje {
     string body = 1;
