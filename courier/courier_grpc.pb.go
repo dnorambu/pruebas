@@ -17,8 +17,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CourierServiceClient interface {
-	Hello(ctx context.Context, in *Mensaje, opts ...grpc.CallOption) (*Mensaje, error)
-	CodigoPyme(ctx context.Context, in *OrdenPyme, opts ...grpc.CallOption) (*Codigo, error)
+	EnviarOrdenPyme(ctx context.Context, in *OrdenPyme, opts ...grpc.CallOption) (*Codigo, error)
+	EnviarOrdenRetail(ctx context.Context, in *OrdenRetail, opts ...grpc.CallOption) (*Empty, error)
+	Seguimiento(ctx context.Context, in *Codigo, opts ...grpc.CallOption) (*Mensaje, error)
 }
 
 type courierServiceClient struct {
@@ -29,18 +30,27 @@ func NewCourierServiceClient(cc grpc.ClientConnInterface) CourierServiceClient {
 	return &courierServiceClient{cc}
 }
 
-func (c *courierServiceClient) Hello(ctx context.Context, in *Mensaje, opts ...grpc.CallOption) (*Mensaje, error) {
-	out := new(Mensaje)
-	err := c.cc.Invoke(ctx, "/CourierService/Hello", in, out, opts...)
+func (c *courierServiceClient) EnviarOrdenPyme(ctx context.Context, in *OrdenPyme, opts ...grpc.CallOption) (*Codigo, error) {
+	out := new(Codigo)
+	err := c.cc.Invoke(ctx, "/CourierService/EnviarOrdenPyme", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *courierServiceClient) CodigoPyme(ctx context.Context, in *OrdenPyme, opts ...grpc.CallOption) (*Codigo, error) {
-	out := new(Codigo)
-	err := c.cc.Invoke(ctx, "/CourierService/CodigoPyme", in, out, opts...)
+func (c *courierServiceClient) EnviarOrdenRetail(ctx context.Context, in *OrdenRetail, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/CourierService/EnviarOrdenRetail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *courierServiceClient) Seguimiento(ctx context.Context, in *Codigo, opts ...grpc.CallOption) (*Mensaje, error) {
+	out := new(Mensaje)
+	err := c.cc.Invoke(ctx, "/CourierService/Seguimiento", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +61,9 @@ func (c *courierServiceClient) CodigoPyme(ctx context.Context, in *OrdenPyme, op
 // All implementations must embed UnimplementedCourierServiceServer
 // for forward compatibility
 type CourierServiceServer interface {
-	Hello(context.Context, *Mensaje) (*Mensaje, error)
-	CodigoPyme(context.Context, *OrdenPyme) (*Codigo, error)
+	EnviarOrdenPyme(context.Context, *OrdenPyme) (*Codigo, error)
+	EnviarOrdenRetail(context.Context, *OrdenRetail) (*Empty, error)
+	Seguimiento(context.Context, *Codigo) (*Mensaje, error)
 	mustEmbedUnimplementedCourierServiceServer()
 }
 
@@ -60,11 +71,14 @@ type CourierServiceServer interface {
 type UnimplementedCourierServiceServer struct {
 }
 
-func (UnimplementedCourierServiceServer) Hello(context.Context, *Mensaje) (*Mensaje, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Hello not implemented")
+func (UnimplementedCourierServiceServer) EnviarOrdenPyme(context.Context, *OrdenPyme) (*Codigo, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnviarOrdenPyme not implemented")
 }
-func (UnimplementedCourierServiceServer) CodigoPyme(context.Context, *OrdenPyme) (*Codigo, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CodigoPyme not implemented")
+func (UnimplementedCourierServiceServer) EnviarOrdenRetail(context.Context, *OrdenRetail) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EnviarOrdenRetail not implemented")
+}
+func (UnimplementedCourierServiceServer) Seguimiento(context.Context, *Codigo) (*Mensaje, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Seguimiento not implemented")
 }
 func (UnimplementedCourierServiceServer) mustEmbedUnimplementedCourierServiceServer() {}
 
@@ -79,38 +93,56 @@ func RegisterCourierServiceServer(s *grpc.Server, srv CourierServiceServer) {
 	s.RegisterService(&_CourierService_serviceDesc, srv)
 }
 
-func _CourierService_Hello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Mensaje)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(CourierServiceServer).Hello(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/CourierService/Hello",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CourierServiceServer).Hello(ctx, req.(*Mensaje))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _CourierService_CodigoPyme_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CourierService_EnviarOrdenPyme_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(OrdenPyme)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CourierServiceServer).CodigoPyme(ctx, in)
+		return srv.(CourierServiceServer).EnviarOrdenPyme(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CourierService/CodigoPyme",
+		FullMethod: "/CourierService/EnviarOrdenPyme",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CourierServiceServer).CodigoPyme(ctx, req.(*OrdenPyme))
+		return srv.(CourierServiceServer).EnviarOrdenPyme(ctx, req.(*OrdenPyme))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CourierService_EnviarOrdenRetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OrdenRetail)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourierServiceServer).EnviarOrdenRetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/CourierService/EnviarOrdenRetail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourierServiceServer).EnviarOrdenRetail(ctx, req.(*OrdenRetail))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CourierService_Seguimiento_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Codigo)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourierServiceServer).Seguimiento(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/CourierService/Seguimiento",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourierServiceServer).Seguimiento(ctx, req.(*Codigo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -120,12 +152,16 @@ var _CourierService_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*CourierServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Hello",
-			Handler:    _CourierService_Hello_Handler,
+			MethodName: "EnviarOrdenPyme",
+			Handler:    _CourierService_EnviarOrdenPyme_Handler,
 		},
 		{
-			MethodName: "CodigoPyme",
-			Handler:    _CourierService_CodigoPyme_Handler,
+			MethodName: "EnviarOrdenRetail",
+			Handler:    _CourierService_EnviarOrdenRetail_Handler,
+		},
+		{
+			MethodName: "Seguimiento",
+			Handler:    _CourierService_Seguimiento_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

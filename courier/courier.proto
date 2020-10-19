@@ -14,10 +14,23 @@ message OrdenPyme {
     int64 prioridad = 6;
 }
 
+message OrdenRetail {
+    string id = 1;
+    string producto = 2;
+    int64 valor = 3;
+    string tienda = 4;
+    string destino = 5;
+}
+
 message Codigo {
     int64 cod = 1; 
 }
+//Si, existe el paquete que importa el mensaje Empty creado
+//por Google, pero daba problemas de implementacion
+message Empty{
+}
 service CourierService {
-    rpc Hello(Mensaje) returns (Mensaje) {}
-    rpc CodigoPyme(OrdenPyme) returns (Codigo) {}
+    rpc EnviarOrdenPyme(OrdenPyme) returns (Codigo) {}
+    rpc EnviarOrdenRetail(OrdenRetail) returns (Empty){}
+    rpc Seguimiento(Codigo) returns (Mensaje) {}
 }
