@@ -116,10 +116,10 @@ func main() {
 	var conn *grpc.ClientConn
 
 	//Para realizar pruebas locales
-	conn, err := grpc.Dial("localhost:9000", grpc.WithInsecure())
+	//conn, err := grpc.Dial("localhost:9000", grpc.WithInsecure())
 
-	// Descomentar para testear en MV
-	//conn, err := grpc.Dial("10.10.28.141:9000", grpc.WithInsecure())
+	// Descomentar para testear en MV 3 (logistica)
+	conn, err := grpc.Dial("10.10.28.141:9000", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("could not connect: %s", err)
 	}
