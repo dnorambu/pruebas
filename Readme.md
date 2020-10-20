@@ -1,4 +1,7 @@
-Instrucciones respecto al makefile
+Repo de la tarea para su comodidad
+https://github.com/dnorambu/pruebas
+
+## Instrucciones respecto al makefile
 
 *Si estás en la maquina 1 de cliente (10.10.28.14), corre el comando:
     make cliente
