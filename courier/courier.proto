@@ -38,8 +38,21 @@ message Paquete {
     string estado = 5;
     string destino = 6;  
 }
+
+message Entrega {
+    string id = 1;
+    int64 dignipesos = 2;
+    string estado = 3;
+    int64 intentos = 4;
+    string fechaentrega = 5;
+}
+
 service CourierService {
     rpc EnviarOrdenPyme(OrdenPyme) returns (Codigo) {}
     rpc EnviarOrdenRetail(OrdenRetail) returns (Empty){}
     rpc Seguimiento(Codigo) returns (Mensaje) {}
+    rpc PedirRetail(Mensaje) returns (Paquete) {}
+    rpc PedirPrioritario(Mensaje) returns (Paquete) {}
+    rpc PedirNormal(Mensaje) returns (Paquete) {}
+    rpc ResultadoEntrega(Entrega) returns (Mensaje) {}
 }
