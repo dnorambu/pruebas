@@ -17,9 +17,15 @@ import (
 
 //Server Se declara la estructura del servidor
 type Server struct {
-	//Mapa para guardar los pares "CodigoSeguimiento-Estado" de cada paquete
+	//Mapa para guardar los pares "CodigoSeguimiento-Estado" de cada paquete PYME
 	MapaSeguimiento map[int64]string
 
+	//Mapa para guardar los pares "ID-Estado" de cada paquete RETAIL
+	MapaSegRetail map[string]string
+
+	//Mapa para guardar referencias entre "ID-CodigoSeguimiento"
+	//Sirve como man in the middle para mantener consistencia en el estado del paquete
+	MapaIntermedio map[string]int64
 	//Slice que tendrá las órdenes de pymes que lleguen al servidor
 	OrdenesP []*OrdenPyme
 
@@ -30,7 +36,7 @@ type Server struct {
 
 	//Slices que representan a las 3 colas
 	ColaNormal, ColaPrioritario, ColaRetail []*Paquete
-	
+
 	//Slice que guardará las entregas de camiones.
 	EntregasC []*Entrega
 }
@@ -65,6 +71,7 @@ func (s *Server) EnviarOrdenPyme(ctx context.Context, ordenP *OrdenPyme) (*Codig
 		//sobre escritura o inconsistencias
 		s.Mu.Lock()
 		_, err := s.MapaSeguimiento[num]
+		s.MapaIntermedio[ordenP.Id] = num
 		s.Mu.Unlock()
 		if !err {
 			s.Mu.Lock()
@@ -121,48 +128,87 @@ func (s *Server) EnviarOrdenRetail(ctx context.Context, ordenR *OrdenRetail) (*E
 	s.Mu.Unlock()
 	return dummy, err
 }
+
 //PedirRetail para que camion obtenga paquete retail.
 func (s *Server) PedirRetail(ctx context.Context, msj *Mensaje) (*Paquete, error) {
+	var err error
 	s.Mu.Lock()
-	defer s.Mu.Unlock()
-	if len(ColaRetail) >= 1{
-		nuevopaquete := ColaRetail[0]
-		ColaRetail = ColaRetail[1:]
+	if len(s.ColaRetail) >= 1 {
+		nuevopaquete := s.ColaRetail[0]
+		s.ColaRetail = s.ColaRetail[1:]
+		nuevopaquete.Estado = "En Camino"
+		s.Mu.Unlock()
 		return nuevopaquete, err
-	} else {
-		return &Paquete{Id: ""}, err
 	}
+	s.Mu.Unlock()
+	return &Paquete{Id: ""}, err
 }
+
 //PedirPrioritario para que camion obtenga paquete prioritario.
 func (s *Server) PedirPrioritario(ctx context.Context, msj *Mensaje) (*Paquete, error) {
+	var err error
 	s.Mu.Lock()
-	defer s.Mu.Unlock()
-	if len(ColaRetail) >= 1{
-		nuevopaquete := ColaRetail[0]
-		ColaRetail = ColaRetail[1:]
+	if len(s.ColaPrioritario) >= 1 {
+		nuevopaquete := s.ColaPrioritario[0]
+		s.ColaPrioritario = s.ColaPrioritario[1:]
+		nuevopaquete.Estado = "En Camino"
+		//Interaccion entre mapas
+		idAux := nuevopaquete.Id
+		codigoAux, ok := s.MapaIntermedio[idAux]
+		if !ok {
+			fmt.Println("No está la llave pedida")
+			s.Mu.Unlock()
+			return &Paquete{}, err
+		}
+		s.MapaSeguimiento[codigoAux] = "En Camino"
+		s.Mu.Unlock()
 		return nuevopaquete, err
-	} else {
-		return &Paquete{Id: ""}, err
 	}
+	s.Mu.Unlock()
+	return &Paquete{Id: ""}, err
 }
+
 //PedirNormal para que camion obtenga paquete normal.
 func (s *Server) PedirNormal(ctx context.Context, msj *Mensaje) (*Paquete, error) {
+	var err error
 	s.Mu.Lock()
-	defer s.Mu.Unlock()
-	if len(ColaRetail) >= 1{
-		nuevopaquete := ColaRetail[0]
-		ColaRetail = ColaRetail[1:]
+	if len(s.ColaNormal) >= 1 {
+		nuevopaquete := s.ColaNormal[0]
+		s.ColaNormal = s.ColaNormal[1:]
+		nuevopaquete.Estado = "En Camino"
+		//Interaccion entre mapas
+		idAux := nuevopaquete.Id
+		codigoAux, ok := s.MapaIntermedio[idAux]
+		if !ok {
+			fmt.Println("No está la llave pedida")
+			s.Mu.Unlock()
+			return &Paquete{}, err
+		}
+		s.MapaSeguimiento[codigoAux] = "En Camino"
+		s.Mu.Unlock()
 		return nuevopaquete, err
-	} else {
-		return &Paquete{Id: ""}, err
 	}
+	s.Mu.Unlock()
+	return &Paquete{Id: ""}, err
 }
+
 //ResultadoEntrega para que camión entregue resultados.
 func (s *Server) ResultadoEntrega(ctx context.Context, ent *Entrega) (*Empty, error) {
+	var err error
 	s.Mu.Lock()
-	defer s.Mu.Unlock()
 	dummy := &Empty{}
 	s.EntregasC = append(s.EntregasC, ent)
+	//Interaccion entre mapas
+	idAux := ent.Id
+	codigoAux, ok := s.MapaIntermedio[idAux]
+	if !ok {
+		fmt.Println("Entrega completa: ", ent)
+		s.Mu.Unlock()
+		return dummy, err
+	}
+	s.MapaSeguimiento[codigoAux] = ent.Estado
+	s.Mu.Unlock()
+	fmt.Println("Entrega completa: ", ent)
 	return dummy, err
 }
 

@@ -26,6 +26,9 @@ func main() {
 	s.ColaNormal = make([]*courier.Paquete, 0)
 	s.ColaPrioritario = make([]*courier.Paquete, 0)
 	s.ColaRetail = make([]*courier.Paquete, 0)
+	s.EntregasC = make([]*courier.Entrega, 0)
+	s.MapaSegRetail = make(map[string]string)
+	s.MapaIntermedio = make(map[string]int64)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve gRPC server over port 9000: %v", err)

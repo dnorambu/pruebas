@@ -45,6 +45,7 @@ message Entrega {
     string estado = 3;
     int64 intentos = 4;
     string fechaentrega = 5;
+    string camion = 6;
 }
 
 service CourierService {
@@ -54,5 +55,5 @@ service CourierService {
     rpc PedirRetail(Mensaje) returns (Paquete) {}
     rpc PedirPrioritario(Mensaje) returns (Paquete) {}
     rpc PedirNormal(Mensaje) returns (Paquete) {}
-    rpc ResultadoEntrega(Entrega) returns (Mensaje) {}
+    rpc ResultadoEntrega(Entrega) returns (Empty) {}
 }

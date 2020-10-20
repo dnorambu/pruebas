@@ -23,7 +23,7 @@ type CourierServiceClient interface {
 	PedirRetail(ctx context.Context, in *Mensaje, opts ...grpc.CallOption) (*Paquete, error)
 	PedirPrioritario(ctx context.Context, in *Mensaje, opts ...grpc.CallOption) (*Paquete, error)
 	PedirNormal(ctx context.Context, in *Mensaje, opts ...grpc.CallOption) (*Paquete, error)
-	ResultadoEntrega(ctx context.Context, in *Entrega, opts ...grpc.CallOption) (*Mensaje, error)
+	ResultadoEntrega(ctx context.Context, in *Entrega, opts ...grpc.CallOption) (*Empty, error)
 }
 
 type courierServiceClient struct {
@@ -88,8 +88,8 @@ func (c *courierServiceClient) PedirNormal(ctx context.Context, in *Mensaje, opt
 	return out, nil
 }
 
-func (c *courierServiceClient) ResultadoEntrega(ctx context.Context, in *Entrega, opts ...grpc.CallOption) (*Mensaje, error) {
-	out := new(Mensaje)
+func (c *courierServiceClient) ResultadoEntrega(ctx context.Context, in *Entrega, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
 	err := c.cc.Invoke(ctx, "/CourierService/ResultadoEntrega", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ type CourierServiceServer interface {
 	PedirRetail(context.Context, *Mensaje) (*Paquete, error)
 	PedirPrioritario(context.Context, *Mensaje) (*Paquete, error)
 	PedirNormal(context.Context, *Mensaje) (*Paquete, error)
-	ResultadoEntrega(context.Context, *Entrega) (*Mensaje, error)
+	ResultadoEntrega(context.Context, *Entrega) (*Empty, error)
 	mustEmbedUnimplementedCourierServiceServer()
 }
 
@@ -133,7 +133,7 @@ func (UnimplementedCourierServiceServer) PedirPrioritario(context.Context, *Mens
 func (UnimplementedCourierServiceServer) PedirNormal(context.Context, *Mensaje) (*Paquete, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PedirNormal not implemented")
 }
-func (UnimplementedCourierServiceServer) ResultadoEntrega(context.Context, *Entrega) (*Mensaje, error) {
+func (UnimplementedCourierServiceServer) ResultadoEntrega(context.Context, *Entrega) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ResultadoEntrega not implemented")
 }
 func (UnimplementedCourierServiceServer) mustEmbedUnimplementedCourierServiceServer() {}
