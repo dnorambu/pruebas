@@ -30,6 +30,9 @@ type Server struct {
 
 	//Slices que representan a las 3 colas
 	ColaNormal, ColaPrioritario, ColaRetail []*Paquete
+	
+	//Slice que guardará las entregas de camiones.
+	EntregasC []*Entrega
 }
 
 //Seguimiento Esta es la prueba inicial de mi función para devolver código de seguimiento
@@ -153,6 +156,14 @@ func (s *Server) PedirNormal(ctx context.Context, msj *Mensaje) (*Paquete, error
 	} else {
 		return &Paquete{Id: ""}, err
 	}
+}
+//ResultadoEntrega para que camión entregue resultados.
+func (s *Server) ResultadoEntrega(ctx context.Context, ent *Entrega) (*Empty, error) {
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
+	dummy := &Empty{}
+	s.EntregasC = append(s.EntregasC, ent)
+	return dummy, err
 }
 
 // mustEmbedUnimplementedCourierServiceServer solo se añadio por compatibilidad
