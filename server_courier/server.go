@@ -23,6 +23,9 @@ func main() {
 	s.MapaSeguimiento = make(map[int64]string)
 	s.OrdenesP = make([]*courier.OrdenPyme, 0)
 	s.OrdenesR = make([]*courier.OrdenRetail, 0)
+	s.ColaNormal = make([]*courier.Paquete, 0)
+	s.ColaPrioritario = make([]*courier.Paquete, 0)
+	s.ColaRetail = make([]*courier.Paquete, 0)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve gRPC server over port 9000: %v", err)

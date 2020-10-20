@@ -7,6 +7,7 @@ junto a las estructuras de datos que necesitamos en server.go
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"sync"
 	"time"
@@ -25,7 +26,10 @@ type Server struct {
 	//Slice que tendrá las órdens de retail que lleguen al servidor
 	OrdenesR []*OrdenRetail
 	//mutex que protegerá las variables compartidas
-	MuMapaSeg sync.Mutex
+	Mu sync.Mutex
+
+	//Slices que representan a las 3 colas
+	ColaNormal, ColaPrioritario, ColaRetail []*Paquete
 }
 
 //Seguimiento Esta es la prueba inicial de mi función para devolver código de seguimiento
@@ -56,17 +60,43 @@ func (s *Server) EnviarOrdenPyme(ctx context.Context, ordenP *OrdenPyme) (*Codig
 
 		//Manejar acceso concurrente al mapa para evitar errores de
 		//sobre escritura o inconsistencias
-		s.MuMapaSeg.Lock()
+		s.Mu.Lock()
 		_, err := s.MapaSeguimiento[num]
-		s.MuMapaSeg.Unlock()
+		s.Mu.Unlock()
 		if !err {
-			s.MuMapaSeg.Lock()
+			s.Mu.Lock()
 			s.MapaSeguimiento[num] = "En bodega"
-			s.MuMapaSeg.Unlock()
+			s.Mu.Unlock()
 			break
 		}
 	}
+	//Definir el tipo según la prioridad
+	var prioridad string
+	if ordenP.Prioridad == 1 {
+		prioridad = "prioritario"
+	} else if ordenP.Prioridad == 0 {
+		prioridad = "normal"
+	} else {
+		fmt.Println("No coincide con ninguna prioridad")
+	}
+
+	Pkg := Paquete{
+		Id:      ordenP.Id,
+		Tipo:    prioridad,
+		Valor:   ordenP.Valor,
+		Tienda:  ordenP.Tienda,
+		Estado:  s.MapaSeguimiento[num],
+		Destino: ordenP.Destino,
+	}
+
+	if prioridad == "prioritario" {
+		s.ColaPrioritario = append(s.ColaPrioritario, &Pkg)
+	} else {
+		s.ColaNormal = append(s.ColaNormal, &Pkg)
+	}
+
 	s.OrdenesP = append(s.OrdenesP, ordenP)
+
 	return &Codigo{Cod: num}, err
 }
 
@@ -75,6 +105,17 @@ func (s *Server) EnviarOrdenRetail(ctx context.Context, ordenR *OrdenRetail) (*E
 	s.OrdenesR = append(s.OrdenesR, ordenR)
 	var err error
 	dummy := &Empty{}
+	Pkg := Paquete{
+		Id:      ordenR.Id,
+		Tipo:    "retail",
+		Valor:   ordenR.Valor,
+		Tienda:  ordenR.Tienda,
+		Estado:  "En bodega",
+		Destino: ordenR.Destino,
+	}
+	s.Mu.Lock()
+	s.ColaRetail = append(s.ColaRetail, &Pkg)
+	s.Mu.Unlock()
 	return dummy, err
 }
 

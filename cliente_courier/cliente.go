@@ -15,13 +15,9 @@ import (
 )
 
 //Funcion para enviar las ordenes de las pymes
-func sendPyme(recordFile *os.File, tiempo int64, c courier.CourierServiceClient, err error) {
-	if err != nil { // 2. Chequear  si hubo error
-		fmt.Println("Error al abrir el archivo: ", err)
-		return
-	}
-	reader := csv.NewReader(recordFile) // Iniciar el reader
-
+func sendPyme(recordFile *os.File, tiempo int64, c courier.CourierServiceClient) {
+	// Iniciar el reader
+	reader := csv.NewReader(recordFile)
 	//Sacamos el Header para no considerarlo en el registro
 	reader.Read()
 
@@ -71,11 +67,7 @@ func sendPyme(recordFile *os.File, tiempo int64, c courier.CourierServiceClient,
 }
 
 //Funcion para enviar las ordenes de Retail
-func sendRetail(recordFile *os.File, tiempo int64, c courier.CourierServiceClient, err error) {
-	if err != nil { // 2. Chequear  si hubo error
-		fmt.Println("Error al abrir el archivo: ", err)
-		return
-	}
+func sendRetail(recordFile *os.File, tiempo int64, c courier.CourierServiceClient) {
 	reader := csv.NewReader(recordFile) // Iniciar el reader
 
 	reader.Read() //Sacamos el Header para no considerarlo en el registro
@@ -166,15 +158,25 @@ func main() {
 	var recordFile *os.File
 	if tipo == 0 {
 		recordFile, err = os.Open("arch/" + file)
-		sendRetail(recordFile, tiempo, c, err)
+		if err != nil { //Chequear  si hubo error
+			fmt.Println("Error al abrir el archivo: ", err)
+			return
+		}
+		sendRetail(recordFile, tiempo, c)
 		//Se termina la ejecucion pues retail no pide seguimiento
 		return
 	} else if tipo == 1 {
+		if err != nil { //Chequear  si hubo error
+			fmt.Println("Error al abrir el archivo: ", err)
+			return
+		}
 		recordFile, err = os.Open("arch/" + file)
-		sendPyme(recordFile, tiempo, c, err)
+		sendPyme(recordFile, tiempo, c)
 	} else {
-
+		fmt.Println("Se introdujo un tipo no valido de cliente")
+		return
 	}
+
 	//Ciclo para pedir seguimientos
 	var opcion, codigoSeg int64
 	fmt.Println("Ingrese la accion (numero) que desee: ")
@@ -184,6 +186,12 @@ func main() {
 		if opcion == 1 {
 			fmt.Println("Ingrese el codigo de seguimiento: ")
 			fmt.Scan(&codigoSeg)
+			SolicitudSeg := courier.Codigo{Cod: codigoSeg}
+			estado, err := c.Seguimiento(context.Background(), &SolicitudSeg)
+			if err != nil {
+				fmt.Println("El codigo no esta registrado en el servidor: ", err)
+			}
+			fmt.Println("Estado de la orden:", estado.Body)
 		} else if opcion == 2 {
 			fmt.Println("Adios")
 			break

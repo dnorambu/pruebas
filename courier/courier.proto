@@ -29,6 +29,15 @@ message Codigo {
 //por Google, pero daba problemas de implementacion
 message Empty{
 }
+
+message Paquete {
+    string id = 1;
+    string tipo = 2;
+    int64 valor = 3;
+    string tienda =4;
+    string estado = 5;
+    string destino = 6;  
+}
 service CourierService {
     rpc EnviarOrdenPyme(OrdenPyme) returns (Codigo) {}
     rpc EnviarOrdenRetail(OrdenRetail) returns (Empty){}
