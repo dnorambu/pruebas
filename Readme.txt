@@ -45,7 +45,7 @@ en "arch/" y al correr la instancia, se debe dar el nombre en formato
 escritura en el servidor; y para proveer todos los códigos de seguimiento
 al cliente antes de solicitar el seguimiento.
 
-4. No se hizo la parte de finanzas pues la maquina 4 estuvo deshabilitada
+4. No se hizo la parte de finanzas pues una maquina (10.10.28.14) estuvo deshabilitada
 desde el jueves (15/10). No podíamos establecer conexion ssh2 y recién hoy
 Lunes 20/10 se arregló. uwu
 
