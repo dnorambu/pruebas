@@ -12,27 +12,28 @@ https://github.com/dnorambu/pruebas
 *Si estás en la maquina 3 de logistica (10.10.28.141), corre el comando:
     make logistica
 
-Máquina 1 (Cliente) ip/hostname:10.10.28.14 contraseña:KvDrkXkUgWjWJRP
+## Datos de maquinas
+* Máquina 1 (Cliente) ip/hostname:10.10.28.14 contraseña:KvDrkXkUgWjWJRP
 
-Máquina 2 (Camiones) ip/hostname: 10.10.28.140 contraseña:FaKaHdEhckVVfXB
+* Máquina 2 (Camiones) ip/hostname: 10.10.28.140 contraseña:FaKaHdEhckVVfXB
 
-Máquina 3 (Logistica) ip/hostname: 10.10.28.141 contraseña:iRYfdEWRHuGYJLs
+* Máquina 3 (Logistica) ip/hostname: 10.10.28.141 contraseña:iRYfdEWRHuGYJLs
 
-Máquina 4 (Finanzas) ip/hostname: 10.10.28.142 contraseña:wXxrcXJYtGkGcoW
+* Máquina 4 (Finanzas) ip/hostname: 10.10.28.142 contraseña:wXxrcXJYtGkGcoW
 
 En caso de que las dependencias de GO no estén en orden (lo cual pasaba mucho en las VM)
 Probar con los siguientes comandos
 
-export GOROOT=/usr/local/go
-export GOPATH=$HOME/go
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOROOT:$GOPATH:$GOBIN
+* export GOROOT=/usr/local/go
+* export GOPATH=$HOME/go
+* export GOBIN=$GOPATH/bin
+* export PATH=$PATH:$GOROOT:$GOPATH:$GOBIN
 
 Si llegan a salir errores de plugin faltante esto lo soluciona:
-$ export GO111MODULE=on  # Enable module mode
-$ go get github.com/golang/protobuf/protoc-gen-go \
+* $ export GO111MODULE=on  # Enable module mode
+* $ go get github.com/golang/protobuf/protoc-gen-go \
          google.golang.org/grpc/cmd/protoc-gen-go-grpc
-$ export PATH="$PATH:$(go env GOPATH)/bin"
+* $ export PATH="$PATH:$(go env GOPATH)/bin"
 
 
 Consideraciones:
