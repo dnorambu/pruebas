@@ -118,6 +118,42 @@ func (s *Server) EnviarOrdenRetail(ctx context.Context, ordenR *OrdenRetail) (*E
 	s.Mu.Unlock()
 	return dummy, err
 }
+//PedirRetail para que camion obtenga paquete retail.
+func (s *Server) PedirRetail(ctx context.Context, msj *Mensaje) (*Paquete, error) {
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
+	if len(ColaRetail) >= 1{
+		nuevopaquete := ColaRetail[0]
+		ColaRetail = ColaRetail[1:]
+		return nuevopaquete, err
+	} else {
+		return &Paquete{Id: ""}, err
+	}
+}
+//PedirPrioritario para que camion obtenga paquete prioritario.
+func (s *Server) PedirPrioritario(ctx context.Context, msj *Mensaje) (*Paquete, error) {
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
+	if len(ColaRetail) >= 1{
+		nuevopaquete := ColaRetail[0]
+		ColaRetail = ColaRetail[1:]
+		return nuevopaquete, err
+	} else {
+		return &Paquete{Id: ""}, err
+	}
+}
+//PedirNormal para que camion obtenga paquete normal.
+func (s *Server) PedirNormal(ctx context.Context, msj *Mensaje) (*Paquete, error) {
+	s.Mu.Lock()
+	defer s.Mu.Unlock()
+	if len(ColaRetail) >= 1{
+		nuevopaquete := ColaRetail[0]
+		ColaRetail = ColaRetail[1:]
+		return nuevopaquete, err
+	} else {
+		return &Paquete{Id: ""}, err
+	}
+}
 
 // mustEmbedUnimplementedCourierServiceServer solo se añadio por compatibilidad
 // y evitar warnings al compilar
