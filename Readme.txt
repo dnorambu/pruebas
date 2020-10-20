@@ -9,6 +9,13 @@ Instrucciones respecto al makefile
 *Si estás en la maquina 3 de logistica (10.10.28.141), corre el comando:
     make logistica
 
+Máquina 1 (Cliente) ip/hostname:10.10.28.14 contraseña:KvDrkXkUgWjWJRP
+
+Máquina 2 (Camiones) ip/hostname: 10.10.28.140 contraseña:FaKaHdEhckVVfXB
+
+Máquina 3 (Logistica) ip/hostname: 10.10.28.141 contraseña:iRYfdEWRHuGYJLs
+
+Máquina 4 (Finanzas) ip/hostname: 10.10.28.142 contraseña:wXxrcXJYtGkGcoW
 
 En caso de que las dependencias de GO no estén en orden (lo cual pasaba mucho en las VM)
 Probar con los siguientes comandos
